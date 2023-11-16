@@ -1,52 +1,81 @@
-# account/views.py
-from rest_framework import generics, permissions
+from rest_framework import status
+from rest_framework.generics import CreateAPIView,RetrieveAPIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from .models import CustomUser
-from .serializers import CustomUserSerializer
-from django.contrib.auth.hashers import make_password
+from .serializers import UserSignupSerializer,UserSigninSerializer
+class UserSignupView(CreateAPIView):
 
-class SignUpView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    permission_classes = [permissions.AllowAny]
+    def post(self, request):
+        data = request.data
+        serializer = UserSignupSerializer(data=data)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        try:
 
-        # Ensure that a password is provided
-        password = self.request.data.get('password')
-        if not password:
-            return Response({'error': 'Password is required'}, status=400)
+            if not serializer.is_valid():
+                status_code = status.HTTP_400_BAD_REQUEST
+                response = {
+                    'success': False,
+                    'status code': status_code,
+                    'message': serializer.errors
+                }
+            else:
+                user = serializer.save()
+                status_code = status.HTTP_201_CREATED
+                response = {
+                    'success': True,
+                    'status code': status_code,
+                    'message': 'User registered  successfully',
+                    'user_profile': {
+                        "user_id": user.user_id,
+                        "name": serializer.data['name'],
+                        "email": serializer.data['email']
+                    }
+                }
 
-        # Hash the password before saving the user
-        user = serializer.save(password=make_password(password))
-
-        refresh = RefreshToken.for_user(user)
-        data = {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-
-        return Response(data, status=201)
-
-class SignInView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = CustomUser.objects.get(email=email)
-
-        if user.check_password(password):
-            refresh = RefreshToken.for_user(user)
-            data = {
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+        except Exception as error:
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response = {
+                'success': False,
+                'status code': status_code,
+                'message': 'Something went wrong, Please try again.',
+                'error': str(error),
             }
-            return Response(data)
-        else:
-            return Response({'error': 'Invalid credentials'}, status=400)
+        return Response(response, status=status_code)
+
+
+class UserSigninView(RetrieveAPIView):
+    def post(self, request):
+        print(request.data)
+        serializer = UserSigninSerializer(data=request.data)
+        response = Response()
+
+        try:
+
+            if not serializer.is_valid():
+                status_code = status.HTTP_400_BAD_REQUEST
+                response.status_code = status_code
+                response.data = {
+                    'success': False,
+                    'status code': status_code,
+                    'message': 'Your entered credentials are not correct, please try again',
+                }
+            else:
+
+                status_code = status.HTTP_200_OK
+                response.data = {
+                    'success': True,
+                    'status code': status_code,
+                    'message': 'User logged in  successfully',
+                    'user_profile': serializer.data,
+                }
+                response.status_code = status_code
+        except Exception as e:
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            response.data = {
+                'success': False,
+                'status code': status_code,
+                'message': "Something went wrong, please try again.",
+                "details": str(e),
+            }
+            response.status_code = status_code
+
+        return response
