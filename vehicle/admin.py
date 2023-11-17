@@ -4,9 +4,15 @@ from django.contrib import admin
 
 # vehicle/admin.py
 from django.contrib import admin
-from .models import Vehicle
+from .models import Vehicle,History,Slot
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'number', 'user')
     list_filter = ('user',)
+
+@admin.register(History)
+class VehicleHistoryAdmin(admin.ModelAdmin):
+    list_filter = ('vehicle',)
+
+admin.site.register(Slot)

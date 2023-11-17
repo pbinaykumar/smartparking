@@ -16,9 +16,10 @@ class Slot(models.Model):
 class History(models.Model):
     vehicle = models.ForeignKey(Vehicle,on_delete=models.CASCADE)
     in_time = models.DateTimeField(auto_now_add=True)
-    out_time = models.DateTimeField()
+    out_time = models.DateTimeField(blank=True,null=True)
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE)
-    slot_cost = models.FloatField()
-    extra_cost = models.FloatField()
-    total_cost = models.FloatField()
+    slot_cost = models.FloatField(blank=True,null=True)
+    extra_cost = models.FloatField(blank=True,null=True)
+    total_cost = models.FloatField(blank=True,null=True)
+    completed = models.BooleanField(default=False)
 
