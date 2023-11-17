@@ -10,4 +10,3 @@ from .models import Vehicle
 class VehicleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'number', 'user')
     list_filter = ('user',)
-    search_fields = ('name', 'number', 'user__email')  # Assuming user is linked to CustomUser model
