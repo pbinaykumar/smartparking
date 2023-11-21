@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'account',
     'vehicle',
+    'parkingzone'
 ]
 
 AUTH_USER_MODEL = 'account.User'

@@ -4,7 +4,7 @@ from django.contrib import admin
 
 # vehicle/admin.py
 from django.contrib import admin
-from .models import Vehicle,History,Slot
+from .models import Vehicle,History
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
@@ -14,5 +14,3 @@ class VehicleAdmin(admin.ModelAdmin):
 @admin.register(History)
 class VehicleHistoryAdmin(admin.ModelAdmin):
     list_filter = ('vehicle',)
-
-admin.site.register(Slot)

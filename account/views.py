@@ -7,22 +7,21 @@ class UserSignupView(CreateAPIView):
     def post(self, request):
         data = request.data
         serializer = UserSignupSerializer(data=data)
-
         try:
-
             if not serializer.is_valid():
                 status_code = status.HTTP_400_BAD_REQUEST
+
                 response = {
                     'success': False,
                     'status code': status_code,
-                    'message': serializer.errors
+                    'message': list(serializer.errors.items())[0][1][0]
                 }
             else:
                 user = serializer.save()
                 status_code = status.HTTP_201_CREATED
                 response = {
                     'success': True,
-                    'status code': status_code,
+                    'status_code': status_code,
                     'message': 'User registered  successfully',
                     'user_profile': {
                         "user_id": user.user_id,
@@ -35,7 +34,7 @@ class UserSignupView(CreateAPIView):
             status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             response = {
                 'success': False,
-                'status code': status_code,
+                'status_code': status_code,
                 'message': 'Something went wrong, Please try again.',
                 'error': str(error),
             }

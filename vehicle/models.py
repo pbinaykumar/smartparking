@@ -1,6 +1,7 @@
 # vehicle/models.py
 from django.db import models
 from account.models import User  # Adjust the import based on your project structure
+from parkingzone.models import Slot
 
 class Vehicle(models.Model):
     name = models.CharField(max_length=255)
@@ -10,9 +11,7 @@ class Vehicle(models.Model):
     def __str__(self):
         return self.name
 
-class Slot(models.Model):
-    time_duration = models.IntegerField()
-    cost = models.FloatField()
+
 class History(models.Model):
     vehicle = models.ForeignKey(Vehicle,on_delete=models.CASCADE)
     in_time = models.DateTimeField(auto_now_add=True)
