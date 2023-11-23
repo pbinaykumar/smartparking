@@ -11,6 +11,9 @@ class VehicleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'number', 'user')
     list_filter = ('user',)
 
+
+
 @admin.register(History)
 class VehicleHistoryAdmin(admin.ModelAdmin):
-    list_filter = ('vehicle',)
+    list_filter = ('vehicle','in_time')
+    list_display = ('vehicle','in_time')
